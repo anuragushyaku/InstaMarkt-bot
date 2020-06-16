@@ -1,0 +1,76 @@
+
+// See https://github.com/dialogflow/dialogflow-fulfillment-nodejs
+// for Dialogflow fulfillment library docs, samples, and to report issues
+'use strict';
+
+const functions = require('firebase-functions');
+const { Button, dialogflow, BrowseCarouselItem, BrowseCarousel, Image, Suggestions, Table, List, Carousel, } = require('actions-on-google');
+const axios = require('axios');
+
+const app = dialogflow({ debug: true });
+
+app.intent('Welcome', (conv) => {
+	//conv.contexts.set({ name: 'delivery', lifespan: 2, parameters: { city: 'Rome' }});
+   // console.log('In Same', conv.contexts.get('delivery'));
+  conv.contexts.set('delivery',5,{companyId:'11131'});
+  const contextvalue = conv.contexts;
+  console.log(contextvalue.output['delivery'].parameters);
+});
+
+app.intent('Delivery', (conv, data) => {
+    conv.ask("What a great day for Delivery!  We can provide more information on any of the categories shown below.");
+	console.log('In Different Intent', conv.contexts.get('delivery'));
+    return axios.get(`https://api.instamarkt.co/api/v1/mol/companies/11131/getactivecategoriesnames`).then((success) => {
+        let items = {};
+        for (let i of success.data.data) {
+            let item = {};
+            item.synonyms = [i.name];
+            item.title = `${i.name}`;
+            item.image = new Image({
+                url: `${i.image}`,
+                alt: 'Image alternate text',
+            });
+            item.description = `${i.description}`;
+            items[i.id] = item;
+        }
+        conv.ask(new List({ title: 'Food Categories', items }));
+    }).catch((error) => {
+        conv.ask("Error in category");
+    });
+});
+
+app.intent("actions_intent_OPTION", (conv, params, option) => {
+    conv.ask("Say Something");
+    console.log("test params", params);
+    console.log("test option", option);
+});
+
+app.intent("Takeout", (conv) => {
+    conv.ask("You’d like to place a carryout order.  Got it!  We can provide more information on any of the categories shown below.");
+    return axios.get(`https://api.instamarkt.co/api/v1/mol/companies/11131/getactivecategoriesnames`).then((success) => {
+        let items = {};
+        for (let i of success.data.data) {
+            let item = {};
+            item.synonyms = [i.name];
+            item.title = `${i.name}`;
+            item.image = new Image({
+                url: `${i.image}`,
+                alt: 'Image alternate text',
+            });
+            item.description = `${i.description}`;
+            items[i.id] = item;
+        }
+        conv.ask(new List({ title: 'Food Categories', items }));
+    }).catch((error) => {
+        conv.ask("Error in category");
+    });
+});
+
+app.intent('Products', (conv, params, option) => {
+    console.log("params in products", params);
+    console.log("option in products", option);
+    conv.ask("You’d like to get Product. Please select the product from the following list.");
+});
+
+// Run the proper function handler based on the matched Dialogflow intent name
+exports.dialogflowFirebaseFulfillment = functions.https.onRequest(app);

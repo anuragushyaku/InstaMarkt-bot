@@ -1,0 +1,39 @@
+{
+  "name": "Chatbot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "cloudFuncs.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tunnel": "ngrok http 127.0.0.1:3000",
+    "dev": "nodemon server.js",
+    "lint": "standard"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "engines": {
+    "node": "8"
+  },
+  "configurations": [
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Attach",
+      "port": 9229
+    }
+  ],
+  "dependencies": {
+    "actions-on-google": "^2.12.0",
+    "axios": "^0.19.2",
+    "body-parser": "^1.19.0",
+    "dialogflow-fulfillment": "^0.6.1",
+    "express": "^4.17.1",
+    "firebase-admin": "^8.12.1",
+    "firebase-functions": "^3.7.0"
+  },
+  "devDependencies": {
+    "ngrok": "^3.2.7",
+    "standard": "^14.3.4"
+  }
+}
