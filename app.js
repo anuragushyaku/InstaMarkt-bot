@@ -43,17 +43,17 @@ App.intent('getProductID', (conv, params, option) => {
         var item = [];
         var temps = [];
         item.push(option);
-        temps.push(success.data)
+        temps.push(success.data.data)
       } else {
         var item = contextApp.parameters.categoryId;
         var temps = contextApp.parameters.tempData;
-        temps.push(success.data)
+        temps.push(success.data.data)
         item.push(option);
       }
       conv.contexts.set('sessionvars', 50, { "tempData": temps, "categoryId": item, "userId": 11011 });
       let items = {};
-      if (success.data.length > 0) {
-        for (let i of success.data) {
+      if (success.data.data.length > 0) {
+        for (let i of success.data.data) {
           let item = {};
           item.title = `${i[0].title}  ${i[0].meta.display_price.with_tax.formatted}`;
           item.synonyms = [i[0].name];
@@ -103,7 +103,7 @@ App.intent('getProductAddon', (conv, params, option) => {
   conv.ask(`Any Add-Ons or Special instructions?`);
   return axios.get(`https://api.instamarkt.co/api/v1/mol/companies/11155/categories/${contextApp.parameters.categoryId[contextApp.parameters.categoryId.length - 1]}/menuitems/${contextApp.parameters.ProductId[contextApp.parameters.ProductId.length - 1].product}`)
     .then(success => {
-      let data = success.data[0];
+      let data = success.data.data[0];
       let items = {};
       conv.contexts.set('sessionvars', 50, { "ProductId": field, "addonPrice": data.addonprice, "addonMultiple": data.addonmultiple });
       for (let i = 0; i < data.addonmultiple.length; i++) {
